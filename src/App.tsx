@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Twitter, Upload, Copy, Check, Plus, X as CloseIcon, ExternalLink } from 'lucide-react';
-import { supabase } from './lib/supabase';
+import { Upload, Copy, Check, Plus, X as CloseIcon, ExternalLink, AlertTriangle } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from './lib/supabase';
 import confetti from 'canvas-confetti';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -20,15 +20,32 @@ interface Winner {
 
 const CA = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
+const XLogo = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    className={className}
+  >
+    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.933zm-1.292 19.49h2.039L6.486 3.24H4.298l13.311 17.403z" />
+  </svg>
+);
+
 export default function App() {
   const [winners, setWinners] = useState<Winner[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const configured = isSupabaseConfigured();
 
   useEffect(() => {
-    fetchWinners();
-  }, []);
+    if (configured) {
+      fetchWinners();
+    } else {
+      setLoading(false);
+    }
+  }, [configured]);
 
   const fetchWinners = async () => {
     try {
@@ -55,23 +72,23 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-b-4 border-black bg-white sticky top-0 z-40">
+      <header className="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-b-4 border-[#39FF14] bg-[#0a0a0a] sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-[#FF4500] border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <span className="text-white font-display text-2xl">W</span>
+          <div className="w-12 h-12 bg-[#39FF14] border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <span className="text-black font-display text-2xl">W</span>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl tracking-tight uppercase">Wall of Winners</h1>
+          <h1 className="font-display text-3xl md:text-4xl tracking-tight uppercase text-[#39FF14]">Wall of Winners</h1>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <div className="flex items-center gap-2 bg-[#f0f0f0] border-2 border-black p-2 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <span className="font-mono text-xs font-bold uppercase opacity-50">CA:</span>
+          <div className="flex items-center gap-2 bg-[#1a1a1a] border-2 border-[#39FF14] p-2 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-white">
+            <span className="font-mono text-xs font-bold uppercase opacity-50 text-[#39FF14]">CA:</span>
             <code className="font-mono text-sm font-bold truncate max-w-[150px] md:max-w-none">{CA}</code>
             <button 
               onClick={copyToClipboard}
-              className="p-1 hover:bg-black/10 rounded transition-colors"
+              className="p-1 hover:bg-white/10 rounded transition-colors text-[#39FF14]"
             >
-              {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+              {copied ? <Check size={16} className="text-[#39FF14]" /> : <Copy size={16} />}
             </button>
           </div>
 
@@ -81,13 +98,24 @@ export default function App() {
             rel="noopener noreferrer"
             className="brutal-btn py-2 px-4 flex items-center gap-2 text-sm"
           >
-            <Twitter size={18} />
+            <XLogo size={18} />
             <span>Follow $WoW</span>
           </a>
         </div>
       </header>
 
       <main className="flex-grow container mx-auto px-4 py-12 max-w-6xl">
+        {/* Configuration Warning */}
+        {!configured && (
+          <div className="mb-8 p-4 brutal-border bg-red-100 flex items-center gap-4">
+            <AlertTriangle className="text-red-600 shrink-0" size={32} />
+            <div className="text-left">
+              <p className="font-bold text-red-600 uppercase">Supabase Not Configured!</p>
+              <p className="text-sm">Please set <code className="bg-red-200 px-1">VITE_SUPABASE_URL</code> and <code className="bg-red-200 px-1">VITE_SUPABASE_ANON_KEY</code> in your environment variables to enable the wall.</p>
+            </div>
+          </div>
+        )}
+
         {/* Hero Section */}
         <section className="mb-16 text-center">
           <motion.div 
@@ -95,23 +123,23 @@ export default function App() {
             animate={{ scale: 1, opacity: 1 }}
             className="inline-block mb-6"
           >
-            <div className="meme-card bg-[#FF4500] text-white rotate-[-2deg]">
-              <h2 className="font-display text-5xl md:text-7xl uppercase tracking-tighter">$WoW TICKER</h2>
+            <div className="meme-card bg-[#39FF14] text-black rotate-[-2deg] border-black">
+              <h2 className="font-display text-5xl md:text-7xl uppercase tracking-tighter">$WoW</h2>
             </div>
           </motion.div>
           
           <div className="max-w-2xl mx-auto space-y-6">
             <p className="font-sans text-2xl md:text-3xl font-bold leading-tight">
-              In the world of Solana, there are ruggers and there are <span className="underline decoration-4 decoration-[#FF4500]">WINNERS</span>.
+              In the world of Solana, there are jeeters and there are <span className="underline decoration-4 decoration-[#39FF14]">WINNERS</span>.
             </p>
             <p className="text-lg md:text-xl opacity-80">
               $WoW is more than a coin; it's a statement. If you're a holder, you've already won. 
-              Immortalize your victory on the Wall of Winners. Join the elite.
+              Immortalize your victory on the Wall of Winners. It's your choice which one you'll be.
             </p>
             
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="brutal-btn bg-[#FF4500] text-white text-2xl py-4 px-8 mt-4 animate-float"
+              className="brutal-btn bg-[#39FF14] text-black text-2xl py-4 px-8 mt-4 animate-float"
             >
               Join the Wall
             </button>
@@ -120,9 +148,9 @@ export default function App() {
 
         {/* The Wall */}
         <section className="space-y-8">
-          <div className="flex items-center justify-between border-b-4 border-black pb-4">
-            <h3 className="font-display text-4xl uppercase">The Gallery</h3>
-            <div className="font-mono text-sm font-bold bg-black text-white px-3 py-1">
+          <div className="flex items-center justify-between border-b-4 border-[#39FF14] pb-4">
+            <h3 className="font-display text-4xl uppercase text-[#39FF14]">The Wall of Winners</h3>
+            <div className="font-mono text-sm font-bold bg-[#39FF14] text-black px-3 py-1">
               {winners.length} WINNERS
             </div>
           </div>
@@ -184,12 +212,11 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="p-8 border-t-4 border-black bg-white text-center space-y-4">
-        <p className="font-display text-2xl uppercase">$WoW - Wall of Winners</p>
+      <footer className="p-8 border-t-4 border-[#39FF14] bg-[#0a0a0a] text-center space-y-4">
+        <p className="font-display text-2xl uppercase text-[#39FF14]">$WoW - Wall of Winners</p>
         <div className="flex justify-center gap-6">
-          <a href="#" className="hover:underline font-bold">Twitter</a>
-          <a href="#" className="hover:underline font-bold">Telegram</a>
-          <a href="#" className="hover:underline font-bold">DexScreener</a>
+          <a href="#" className="hover:text-[#39FF14] font-bold transition-colors">Twitter</a>
+          <a href="#" className="hover:text-[#39FF14] font-bold transition-colors">DexScreener</a>
         </div>
         <p className="text-xs opacity-50 font-mono">© 2026 WALL OF WINNERS. NO FINANCIAL ADVICE. JUST WINNING.</p>
       </footer>
@@ -209,18 +236,18 @@ export default function App() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-white brutal-border p-8 space-y-6"
+              className="relative w-full max-w-md bg-[#1a1a1a] brutal-border p-8 space-y-6 text-white"
             >
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 p-2 hover:bg-black/5 rounded-full"
+                className="absolute top-4 right-4 p-2 hover:bg-white/5 rounded-full text-[#39FF14]"
               >
                 <CloseIcon size={24} />
               </button>
 
               <div className="text-center space-y-2">
-                <h2 className="font-display text-4xl uppercase">Join the Wall</h2>
-                <p className="text-black/60">Upload your X profile to show the world you're a winner.</p>
+                <h2 className="font-display text-4xl uppercase text-[#39FF14]">Join the Wall</h2>
+                <p className="text-white/60">Upload your X profile to show the world you're a winner.</p>
               </div>
 
               <UploadForm 
@@ -316,25 +343,25 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <label className="font-display text-xl uppercase">X Username</label>
+        <label className="font-display text-xl uppercase text-[#39FF14]">X Username</label>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-black/40">@</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-white/40">@</span>
           <input 
             type="text" 
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="elonmusk"
-            className="w-full pl-10 pr-4 py-3 brutal-border focus:outline-none focus:ring-2 focus:ring-[#FF4500]"
+            className="w-full pl-10 pr-4 py-3 brutal-border bg-[#0a0a0a] text-white focus:outline-none focus:ring-2 focus:ring-[#39FF14]"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="font-display text-xl uppercase">Profile Picture</label>
+        <label className="font-display text-xl uppercase text-[#39FF14]">Profile Picture</label>
         <div 
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "w-full aspect-square brutal-border border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-black/5 transition-colors overflow-hidden",
+            "w-full aspect-square brutal-border border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors overflow-hidden bg-[#0a0a0a]",
             preview && "border-solid"
           )}
         >
@@ -342,8 +369,8 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
             <img src={preview} alt="Preview" className="w-full h-full object-cover" />
           ) : (
             <>
-              <Upload size={48} className="text-black/20 mb-2" />
-              <span className="font-bold text-black/40">Click to upload</span>
+              <Upload size={48} className="text-[#39FF14]/20 mb-2" />
+              <span className="font-bold text-white/40">Click to upload</span>
             </>
           )}
         </div>
@@ -357,7 +384,7 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       {error && (
-        <p className="text-red-600 font-bold text-center bg-red-50 p-2 border-2 border-red-600">
+        <p className="text-red-600 font-bold text-center bg-red-900/20 p-2 border-2 border-red-600">
           {error}
         </p>
       )}
@@ -365,7 +392,7 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
       <button 
         type="submit" 
         disabled={uploading}
-        className="brutal-btn w-full bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="brutal-btn w-full bg-[#39FF14] text-black disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {uploading ? "Uploading..." : "Publish Victory"}
       </button>

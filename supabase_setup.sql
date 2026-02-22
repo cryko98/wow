@@ -9,19 +9,20 @@ CREATE TABLE IF NOT EXISTS winners (
   image_url TEXT NOT NULL
 );
 
--- 2. Enable Row Level Security (optional but recommended)
+-- 2. Enable Row Level Security
 ALTER TABLE winners ENABLE ROW LEVEL SECURITY;
 
 -- 3. Create a policy to allow anyone to read winners
+DROP POLICY IF EXISTS "Allow public read access" ON winners;
 CREATE POLICY "Allow public read access" ON winners
   FOR SELECT USING (true);
 
 -- 4. Create a policy to allow anyone to insert winners
--- (In a real app, you might want to add more validation)
+DROP POLICY IF EXISTS "Allow public insert access" ON winners;
 CREATE POLICY "Allow public insert access" ON winners
   FOR INSERT WITH CHECK (true);
 
--- 5. Storage Setup
+-- 5. Storage Setup (Manual Steps)
 -- Go to the "Storage" tab in Supabase dashboard.
 -- Create a new bucket named "winners".
 -- Set the bucket to "Public".
