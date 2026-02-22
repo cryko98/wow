@@ -194,9 +194,23 @@ export default function App() {
         <section className="space-y-8 relative z-10">
           <div className="flex items-center justify-between border-b-4 border-[#FFD700] pb-4">
             <h3 className="font-display text-4xl uppercase text-[#FFD700]">The Wall of Winners</h3>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => {
+                setLoading(true);
+                fetchWinners();
+              }}
+              className="p-2 hover:bg-white/10 rounded-full text-[#FFD700] transition-colors"
+              title="Refresh Wall"
+            >
+              <motion.div whileTap={{ rotate: 180 }}>
+                <Plus className="rotate-45" size={24} />
+              </motion.div>
+            </button>
             <div className="font-mono text-sm font-bold bg-[#FFD700] text-black px-3 py-1">
               {winners.length} WINNERS
             </div>
+          </div>
           </div>
 
           {loading ? (
