@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, Copy, Check, Plus, X as CloseIcon, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Upload, Copy, Check, Plus, X as CloseIcon, ExternalLink, AlertTriangle, Trophy, Star, Coins, Crown } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import confetti from 'canvas-confetti';
 import { clsx, type ClassValue } from 'clsx';
@@ -31,6 +31,49 @@ const XLogo = ({ size = 24, className = "" }: { size?: number, className?: strin
     <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.933zm-1.292 19.49h2.039L6.486 3.24H4.298l13.311 17.403z" />
   </svg>
 );
+
+const BackgroundElements = () => {
+  const elements = [
+    { Icon: Trophy, color: '#FFD700' },
+    { Icon: Star, color: '#FFD700' },
+    { Icon: Coins, color: '#39FF14' },
+    { Icon: Crown, color: '#FFD700' },
+    { Icon: Star, color: '#39FF14' },
+    { Icon: Trophy, color: '#39FF14' },
+  ];
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {elements.map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ 
+            x: Math.random() * 100 + '%', 
+            y: Math.random() * 100 + '%',
+            opacity: 0,
+            scale: 0.5,
+            rotate: 0
+          }}
+          animate={{ 
+            y: [null, '-20%', '120%'],
+            opacity: [0, 0.2, 0],
+            scale: [0.5, 1, 0.5],
+            rotate: 360
+          }}
+          transition={{ 
+            duration: 15 + Math.random() * 20, 
+            repeat: Infinity, 
+            delay: i * 2,
+            ease: "linear"
+          }}
+          className="absolute"
+        >
+          <item.Icon size={32 + Math.random() * 64} color={item.color} />
+        </motion.div>
+      ))}
+    </div>
+  );
+};
 
 export default function App() {
   const [winners, setWinners] = useState<Winner[]>([]);
@@ -70,23 +113,24 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      <BackgroundElements />
       {/* Header */}
-      <header className="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-b-4 border-[#39FF14] bg-[#0a0a0a] sticky top-0 z-40">
+      <header className="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-b-4 border-[#FFD700] bg-[#050505] sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-[#39FF14] border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="w-12 h-12 bg-[#FFD700] border-2 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <span className="text-black font-display text-2xl">W</span>
           </div>
-          <h1 className="font-display text-3xl md:text-4xl tracking-tight uppercase text-[#39FF14]">Wall of Winners</h1>
+          <h1 className="font-display text-3xl md:text-4xl tracking-tight uppercase text-[#FFD700]">Wall of Winners</h1>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <div className="flex items-center gap-2 bg-[#1a1a1a] border-2 border-[#39FF14] p-2 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-white">
-            <span className="font-mono text-xs font-bold uppercase opacity-50 text-[#39FF14]">CA:</span>
+          <div className="flex items-center gap-2 bg-[#111] border-2 border-[#FFD700] p-2 rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-white">
+            <span className="font-mono text-xs font-bold uppercase opacity-50 text-[#FFD700]">CA:</span>
             <code className="font-mono text-sm font-bold truncate max-w-[150px] md:max-w-none">{CA}</code>
             <button 
               onClick={copyToClipboard}
-              className="p-1 hover:bg-white/10 rounded transition-colors text-[#39FF14]"
+              className="p-1 hover:bg-white/10 rounded transition-colors text-[#FFD700]"
             >
               {copied ? <Check size={16} className="text-[#39FF14]" /> : <Copy size={16} />}
             </button>
@@ -117,13 +161,13 @@ export default function App() {
         )}
 
         {/* Hero Section */}
-        <section className="mb-16 text-center">
+        <section className="mb-16 text-center relative z-10">
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="inline-block mb-6"
           >
-            <div className="meme-card bg-[#39FF14] text-black rotate-[-2deg] border-black">
+            <div className="meme-card bg-[#FFD700] text-black rotate-[-2deg] border-black">
               <h2 className="font-display text-5xl md:text-7xl uppercase tracking-tighter">$WoW</h2>
             </div>
           </motion.div>
@@ -139,7 +183,7 @@ export default function App() {
             
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="brutal-btn bg-[#39FF14] text-black text-2xl py-4 px-8 mt-4 animate-float"
+              className="brutal-btn bg-[#FFD700] text-black text-2xl py-4 px-8 mt-4 animate-float"
             >
               Join the Wall
             </button>
@@ -147,10 +191,10 @@ export default function App() {
         </section>
 
         {/* The Wall */}
-        <section className="space-y-8">
-          <div className="flex items-center justify-between border-b-4 border-[#39FF14] pb-4">
-            <h3 className="font-display text-4xl uppercase text-[#39FF14]">The Wall of Winners</h3>
-            <div className="font-mono text-sm font-bold bg-[#39FF14] text-black px-3 py-1">
+        <section className="space-y-8 relative z-10">
+          <div className="flex items-center justify-between border-b-4 border-[#FFD700] pb-4">
+            <h3 className="font-display text-4xl uppercase text-[#FFD700]">The Wall of Winners</h3>
+            <div className="font-mono text-sm font-bold bg-[#FFD700] text-black px-3 py-1">
               {winners.length} WINNERS
             </div>
           </div>
@@ -212,11 +256,11 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="p-8 border-t-4 border-[#39FF14] bg-[#0a0a0a] text-center space-y-4">
-        <p className="font-display text-2xl uppercase text-[#39FF14]">$WoW - Wall of Winners</p>
+      <footer className="p-8 border-t-4 border-[#FFD700] bg-[#050505] text-center space-y-4 relative z-10">
+        <p className="font-display text-2xl uppercase text-[#FFD700]">$WoW - Wall of Winners</p>
         <div className="flex justify-center gap-6">
-          <a href="#" className="hover:text-[#39FF14] font-bold transition-colors">Twitter</a>
-          <a href="#" className="hover:text-[#39FF14] font-bold transition-colors">DexScreener</a>
+          <a href="#" className="hover:text-[#FFD700] font-bold transition-colors">Twitter</a>
+          <a href="#" className="hover:text-[#FFD700] font-bold transition-colors">DexScreener</a>
         </div>
         <p className="text-xs opacity-50 font-mono">© 2026 WALL OF WINNERS. NO FINANCIAL ADVICE. JUST WINNING.</p>
       </footer>
@@ -343,7 +387,7 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <label className="font-display text-xl uppercase text-[#39FF14]">X Username</label>
+        <label className="font-display text-xl uppercase text-[#FFD700]">X Username</label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-white/40">@</span>
           <input 
@@ -351,13 +395,13 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="elonmusk"
-            className="w-full pl-10 pr-4 py-3 brutal-border bg-[#0a0a0a] text-white focus:outline-none focus:ring-2 focus:ring-[#39FF14]"
+            className="w-full pl-10 pr-4 py-3 brutal-border bg-[#0a0a0a] text-white focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="font-display text-xl uppercase text-[#39FF14]">Profile Picture</label>
+        <label className="font-display text-xl uppercase text-[#FFD700]">Profile Picture</label>
         <div 
           onClick={() => fileInputRef.current?.click()}
           className={cn(
@@ -369,7 +413,7 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
             <img src={preview} alt="Preview" className="w-full h-full object-cover" />
           ) : (
             <>
-              <Upload size={48} className="text-[#39FF14]/20 mb-2" />
+              <Upload size={48} className="text-[#FFD700]/20 mb-2" />
               <span className="font-bold text-white/40">Click to upload</span>
             </>
           )}
@@ -392,7 +436,7 @@ function UploadForm({ onSuccess }: { onSuccess: () => void }) {
       <button 
         type="submit" 
         disabled={uploading}
-        className="brutal-btn w-full bg-[#39FF14] text-black disabled:opacity-50 disabled:cursor-not-allowed"
+        className="brutal-btn w-full bg-[#FFD700] text-black disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {uploading ? "Uploading..." : "Publish Victory"}
       </button>
